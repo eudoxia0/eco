@@ -29,7 +29,7 @@
   ((name :reader name :initarg :name :type string)))
 
 (defclass <block> (<content-tag>)
-  ((body :reader body :initarg body)))
+  ((body :reader body :initarg :body)))
 
 ;;; Pretty-printing
 
@@ -43,7 +43,7 @@
   (format stream "{% end~A%}" (name tag)))
 
 (defmethod print-object ((block <block>) stream)
-  (format stream "{% ~A ~A%}~&~A~&{% end~A%}"
+  (format stream "{% ~A ~A%}~&~{~A~&~}{% end~A%}"
           (name block) (content block) (body block)
           (name block)))
 
@@ -88,9 +88,9 @@
 
 (defrule tag (or end-tag expr-tag content-tag))
 
-(defrule expression (or tag body-block))
+(defrule expression (* (or tag block body-block)))
 
-(defrule block (and content-tag (* expression) end-tag)
+(defrule block (and content-tag expression end-tag)
   (:destructure (ct body et)
     (if (equal (name ct) (name et))
         (make-instance '<block>
@@ -100,4 +100,10 @@
         (error "End tag does not match start tag."))))
 
 (defun parse-template (template-string)
-  (parse 'expression template-string))
+  (let ((parsed (parse 'expression template-string)))
+    (if (rest parsed)
+        (make-instance '<block>
+                       :name "progn"
+                       :content ""
+                       :body parsed)
+        (first parsed))))

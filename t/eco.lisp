@@ -31,4 +31,8 @@
   (is (equal (name (parse-template "{% endtest %}"))
              "test")))
 
+(test block
+  (is-true (typep (parse-template "{% block %} body {% endblock %}")
+                  '<block>)))
+
 (run! 'parser)
