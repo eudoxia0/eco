@@ -17,14 +17,14 @@ A basic template (`.eco` extension) looks like this:
         <ul id="post-list">
           {% loop for (title . snippet) in posts %}
             <li><% title %> - <% snippet %></li>
-          {% end %}
+          {% endloop %}
         </ul>
       {% else %}
         <span>No recent posts.</span>
-      {% end %}
+      {% endif %}
     </body>
   </html>
-{% end %}
+{% endtemplate %}
 ```
 
 To load this template, put this in your system definition file:
@@ -45,7 +45,7 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 # Tags
 
 - `<% [expr] %>` becomes `(print-object [expr])`.
-- `{% tag [expr] %}[body]{% end %}` becomes `(tag [expr] [body])`, with the
+- `{% tag [expr] %}[body]{% endtag %}` becomes `(tag [expr] [body])`, with the
   exception of the `if` statement.
 
 # Options
@@ -53,6 +53,29 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 - `*autoescape*`: Automatically escape all expressions. Defaults to `NIL`.
 - `*template-package*`: The package the templates will be defined it. Defaults
   to `:eco-template`.
+
+# Reference
+
+## `template`
+
+**Syntax:**
+
+```html
+{% template <name> <arguments>* %}
+  <body>
+{% endtemplate %}
+```
+
+## `if`
+
+**Syntax:**
+
+```html
+{% if <test> %}
+  <true-branch>
+{% else %}
+  <false-branch>
+{% endif %}
 
 # License
 
