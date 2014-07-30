@@ -17,7 +17,7 @@
 
 (defrule expr-tag-char (not "%>"))
 
-(defrule expr-tag ("<%" (* ws) (* expr-tag-char) (* ws) "%>")
+(defrule expr-tag (and "<%" (* ws) (* expr-tag-char) (* ws) "%>")
   (:destructure (open ws1 text ws2 close)
     (text text)))
 
@@ -36,5 +36,5 @@
 (defmacro define-block (rule-name (&rest rules)
                                   (&rest args)
                                   &rest destructure)
-  `(defrule ,rule-name ,rules
+  `(defrule ,rule-name (and ,rules)
      (:destructure ,args ,destructure)))
