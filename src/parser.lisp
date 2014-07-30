@@ -13,13 +13,15 @@
             :initarg :content
             :type string)))
 
-(defclass <no-content-tag> (<tag>)
+(defclass <content-tag> (<tag>)
+  ((name :reader name :initarg :name :type string)
+   (content :reader content :initarg :content :type string)))
+
+(defclass <end-tag> (<no-content-tag>)
   ((name :reader name :initarg :name :type string)))
 
-(defclass <content-tag> (<no-content-tag>)
-  ((content :reader content :initarg :content :type string)))
-
-(defclass <end-tag> (<no-content-tag>) ())
+(defclass <block> (<content-tag>)
+  ((body :reader body :initarg body)))
 
 ;;; Utility rules
 
@@ -43,11 +45,7 @@
 
 (defrule tag-name (+ (not (or "%}" ws))))
 
-(defrule tag-text (+ (not "%}")))
-
-(defrule no-content-tag (and "{%" (* ws) tag-name (* ws) "%}")
-  (:destructure (open ws1 name ws2 close)
-    (make-instance '<no-content-tag> :name (text name))))
+(defrule tag-text (* (not "%}")))
 
 (defrule content-tag (and "{%" (* ws) tag-name (+ ws) tag-text (* ws) "%}")
   (:destructure (open ws1 name ws2 content ws3 close)
@@ -58,17 +56,24 @@
 (defrule end-tag (and "{%" (* ws) "end" tag-name (* ws) "%}")
   (:destructure (open ws1 end text ws2 close)
     (make-instance '<end-tag>
-                   :name (concatenate 'string "end" (text text)))))
+                   :name (text text))))
 
 (defrule body-block (+ character)
   (:destructure (&rest text)
     (text text)))
 
-;;; Toplevel rules
-
 (defrule tag (or expr-tag no-content-tag content-tag end-tag))
 
 (defrule expression (or tag body-block))
+
+(defrule block (and content-tag (* expression) end-tag)
+  (:destructure (ct body et)
+    (if (equal (name ct) (name et))
+        (make-instance '<block>
+                       :name (name ct)
+                       :content (content ct)
+                       :body body)
+        (error "End tag does not match start tag."))))
 
 (defun parse-template (template-string)
   (parse 'expression template-string))
