@@ -4,6 +4,23 @@
   (:export :parse-template))
 (in-package :eco.parser)
 
+;;; Block classes
+
+(defclass <tag> () ())
+
+(defclass <expr-tag> (<tag>)
+  ((content :reader content
+            :initarg :content
+            :type string)))
+
+(defclass <no-content-tag> (<tag>)
+  ((name :reader name :initarg :name :type string)))
+
+(defclass <content-tag> (<no-content-tag>)
+  ((content :reader content :initarg :content :type string)))
+
+(defclass <end-tag> (<no-content-tag>) ())
+
 ;;; Utility rules
 
 (defparameter +whitespace-chars+
