@@ -86,7 +86,7 @@
   (:destructure (&rest text)
     (text text)))
 
-(defrule tag (or expr-tag no-content-tag content-tag end-tag))
+(defrule tag (or expr-tag content-tag end-tag))
 
 (defrule expression (or tag body-block))
 
