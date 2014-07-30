@@ -7,8 +7,16 @@
   :description "Testing the parser.")
 (in-suite parser)
 
-(test expressions
+(test expression-tag
   (is-true (typep (parse-template "<%%>")
-                  '<expr-tag>)))
+                  '<expr-tag>))
+  (is-true (typep (parse-template "<% a b c %>")
+                  '<expr-tag>))
+  (is (equal "a b c "
+             (content (parse-template "<% a b c %>")))))
+
+(test content-tag
+  (is-true (typep (parse-template "{% a b c %}")
+                  '<content-tag>)))
 
 (run! 'parser)
