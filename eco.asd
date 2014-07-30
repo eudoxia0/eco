@@ -4,8 +4,10 @@
   :license "MIT"
   :depends-on (:esrap)
   :components ((:module "src"
+                :serial t
                 :components
-                ((:file "parser"))))
+                ((:file "parser")
+                 (:file "compiler"))))
   :description "Fast, flexible, designer-friendly templates."
   :long-description
   #.(uiop:read-file-string

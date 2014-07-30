@@ -1,7 +1,15 @@
 (in-package :cl-user)
 (defpackage eco.parser
   (:use :cl :esrap)
-  (:export :parse-template))
+  (:export :<tag>
+           :<expr-tag>
+           :<content-tag>
+           :<end-tag>
+           :<block>
+           :name
+           :content
+           :body
+           :parse-template))
 (in-package :eco.parser)
 
 ;;; Block classes
