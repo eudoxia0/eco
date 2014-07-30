@@ -40,7 +40,7 @@
   (format stream "{% ~A ~A%}" (name tag) (content tag)))
 
 (defmethod print-object ((tag <end-tag>) stream)
-  (format stream "{% end~A%}" (name end-tag)))
+  (format stream "{% end~A%}" (name tag)))
 
 (defmethod print-object ((block <block>) stream)
   (format stream "{% ~A ~A%}~&~A~&{% end~A%}"
@@ -86,7 +86,7 @@
   (:destructure (&rest text)
     (text text)))
 
-(defrule tag (or expr-tag content-tag end-tag))
+(defrule tag (or end-tag expr-tag content-tag))
 
 (defrule expression (or tag body-block))
 
