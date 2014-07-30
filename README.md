@@ -72,10 +72,25 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 
 ```html
 {% if <test> %}
+  <body>
+{% endif %}
+
+{% if <test> %}
   <true-branch>
 {% else %}
   <false-branch>
 {% endif %}
+
+{% if <test> %}
+  <true-branch>
+{% elif <test2> %}
+  <another-branch>
+{% elif <test3> %}
+  <another-branch>
+{% else %}
+  <else-branch>
+{% endif %}
+```
 
 # License
 
