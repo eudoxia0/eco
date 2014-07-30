@@ -37,7 +37,7 @@
 
 (defrule expr-tag (and "<%" (* ws) (* expr-tag-char) (* ws) "%>")
   (:destructure (open ws1 text ws2 close)
-    (list :expt (text text))))
+    (make-instance '<expr-tag> :content (text text))))
 
 ;;; Block tags
 
@@ -47,15 +47,18 @@
 
 (defrule no-content-tag (and "{%" (* ws) tag-name (* ws) "%}")
   (:destructure (open ws1 name ws2 close)
-    (list :nct (text name))))
+    (make-instance '<no-content-tag> :name (text name))))
 
 (defrule content-tag (and "{%" (* ws) tag-name (+ ws) tag-text (* ws) "%}")
   (:destructure (open ws1 name ws2 content ws3 close)
-    (list :ct (text name) (text content))))
+    (make-instance '<content-tag>
+                   :name (text name)
+                   :content (text content))))
 
 (defrule end-tag (and "{%" (* ws) "end" tag-name (* ws) "%}")
   (:destructure (open ws1 end text ws2 close)
-    (list :et (concatenate 'string "end" (text text)))))
+    (make-instance '<end-tag>
+                   :name (concatenate 'string "end" (text text)))))
 
 (defrule body-block (+ character)
   (:destructure (&rest text)
