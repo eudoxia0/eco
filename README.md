@@ -56,9 +56,10 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 
 # Goals
 
-- **Lightweight:** Both in terms of definitions and cognitive overhead: Proper
-  use of Eco should not require more than a cursory read of this README from
-  time to time.
+- **Simple:** Eco is essentially just a string concatenator. It introduces no
+  constructs of its own: Every tag is pure Common Lisp code, plain and simple.
+- **Easy to Use:** Proper use of Eco should not require more than a
+  cursory read of this README from time to time.
 - **Designer-friendly:** Lispers have written template engine after template
   engine that turns S-expressions into HTML. Which is great, if you're a
   lisper. Eco is meant to be used for more than HTML and also to be usable to
