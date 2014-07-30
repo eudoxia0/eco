@@ -23,6 +23,22 @@
 (defclass <block> (<content-tag>)
   ((body :reader body :initarg body)))
 
+;;; Pretty-printing
+
+(defmethod print-object ((tag <expr-tag>) stream)
+  (format stream "<% ~A%>" (content tag)))
+
+(defmethod print-object ((tag <content-tag>) stream)
+  (format stream "{% ~A ~A%}" (name tag) (content tag)))
+
+(defmethod print-object ((tag <end-tag>) stream)
+  (format stream "{% end~A%}" (name end-tag)))
+
+(defmethod print-object ((block <block>) stream)
+  (format stream "{% ~A ~A%}~&~A~&{% end~A%}"
+          (name block) (content block) (body block)
+          (name block)))
+
 ;;; Utility rules
 
 (defparameter +whitespace-chars+
