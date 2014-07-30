@@ -25,7 +25,7 @@
 
 (defrule block-tag-char (not "%}"))
 
-(defmacro nocontent-tag (name)
+(defmacro no-content-tag (name)
   "Return an esrap matcher for a content-free tag of a given name."
   `("{%" (* ws) ,name (* ws) "%}"))
 
@@ -33,8 +33,21 @@
   "Return an esrap matcher for a tag of a given name."
   `("{%" (* ws) ,name (+ ws) (* block-tag-char) (* ws) "%}"))
 
+(defmacro end-tag (name)
+  "Esrap matcher for an end tag of a given name."
+  `("{%" (* ws) ,(concatenate 'string "end" name) (* ws) "%}"))
+
+(defmacro body-block ()
+  "Return an esrap matcher for a body"
+  `(+ character))
+
 (defmacro define-block (rule-name (&rest rules)
                                   (&rest args)
                                   &rest destructure)
   `(defrule ,rule-name (and ,rules)
      (:destructure ,args ,destructure)))
+
+(define-block simple-if ((content-tag "if")
+                         (body-block)
+                         (end-tag "if"))
+    (
