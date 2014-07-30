@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage eco.parser
-  (:use :cl :esrap))
+  (:use :cl :esrap)
+  (:export :parse-template))
 (in-package :eco.parser)
 
 ;;; Utility rules
@@ -19,35 +20,35 @@
 
 (defrule expr-tag (and "<%" (* ws) (* expr-tag-char) (* ws) "%>")
   (:destructure (open ws1 text ws2 close)
-    (text text)))
+    (list :expt (text text))))
 
 ;;; Block tags
 
-(defrule block-tag-char (not "%}"))
+(defrule tag-name (+ (not (or "%}" ws))))
 
-(defmacro no-content-tag (name)
-  "Return an esrap matcher for a content-free tag of a given name."
-  `("{%" (* ws) ,name (* ws) "%}"))
+(defrule tag-text (+ (not "%}")))
 
-(defmacro content-tag (name)
-  "Return an esrap matcher for a tag of a given name."
-  `("{%" (* ws) ,name (+ ws) (* block-tag-char) (* ws) "%}"))
+(defrule no-content-tag (and "{%" (* ws) tag-name (* ws) "%}")
+  (:destructure (open ws1 name ws2 close)
+    (list :nct (text name))))
 
-(defmacro end-tag (name)
-  "Esrap matcher for an end tag of a given name."
-  `("{%" (* ws) ,(concatenate 'string "end" name) (* ws) "%}"))
+(defrule content-tag (and "{%" (* ws) tag-name (+ ws) tag-text (* ws) "%}")
+  (:destructure (open ws1 name ws2 content ws3 close)
+    (list :ct (text name) (text content))))
 
-(defmacro body-block ()
-  "Return an esrap matcher for a body"
-  `(+ character))
+(defrule end-tag (and "{%" (* ws) "end" tag-name (* ws) "%}")
+  (:destructure (open ws1 end text ws2 close)
+    (list :et (concatenate 'string "end" (text text)))))
 
-(defmacro define-block (rule-name (&rest rules)
-                                  (&rest args)
-                                  &rest destructure)
-  `(defrule ,rule-name (and ,rules)
-     (:destructure ,args ,destructure)))
+(defrule body-block (+ character)
+  (:destructure (&rest text)
+    (text text)))
 
-(define-block simple-if ((content-tag "if")
-                         (body-block)
-                         (end-tag "if"))
-    (
+;;; Toplevel rules
+
+(defrule tag (or expr-tag no-content-tag content-tag end-tag))
+
+(defrule expression (or tag body-block))
+
+(defun parse-template (template-string)
+  (parse 'expression template-string))
