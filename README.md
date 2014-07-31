@@ -45,7 +45,7 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 # Tags
 
 - `<% [expr] %>` becomes `(print-object [expr])`.
-- `{% tag [expr] %}[body]{% endtag %}` becomes `(tag [expr] [body])`, with the
+- `{% tag [expr] %}[body]{% endtag %}` becomes `(tag [expr] (emit [body]))`, with the
   exception of the `if` statement.
 
 # Options
