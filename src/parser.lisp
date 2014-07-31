@@ -93,13 +93,14 @@
 (defun parse-template (template-string)
   (parse 'expression template-string))
 
+(defun is-delim (tok end-name)
+  (and (typep tok '<end-tag>)
+       (equal (name tok) end-name)))
+
 (defun process-tokens (tokens)
   (labels ((next-token ()
              (prog1 (first tokens)
                (setf tokens (rest tokens))))
-           (is-delim (tok end-name)
-             (and (typep tok '<end-tag>)
-                  (equal (name tok) end-name)))
            (parse-tokens (&optional end-name)
              (let ((list (list))
                    (tok (next-token)))
