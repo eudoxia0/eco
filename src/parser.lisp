@@ -97,6 +97,20 @@
   (and (typep tok '<end-tag>)
        (equal (name tok) end-name)))
 
+(defun is-else-tag (tok)
+  (and (typep tok '<content-tag>)
+       (equal (name tok) "else")
+       (equal (content tok) "")))
+
+(defun is-elif-tag (tok)
+  (and (typep tok '<content-tag>)
+       (equal (name tok) "elif")))
+
+(defun starts-block (tok)
+  (and (typep tok '<content-tag>)
+       (not (is-else-tag tok))
+       (not (is-elif-tag tok))))
+
 (defun process-tokens (tokens)
   (labels ((next-token ()
              (prog1 (first tokens)
