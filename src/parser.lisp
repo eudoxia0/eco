@@ -93,21 +93,24 @@
 (defun parse-template (template-string)
   (parse 'expression template-string))
 
+(defun contentp (tok)
+  (typep tok '<content-tag>))
+
 (defun delimp (tok end-name)
   (and (typep tok '<end-tag>)
        (equal (name tok) end-name)))
 
 (defun else-tag-p (tok)
-  (and (typep tok '<content-tag>)
+  (and (contentp tok)
        (equal (name tok) "else")
        (equal (content tok) "")))
 
 (defun elif-tag-p (tok)
-  (and (typep tok '<content-tag>)
+  (and (contentp tok)
        (equal (name tok) "elif")))
 
 (defun starts-block-p (tok)
-  (and (typep tok '<content-tag>)
+  (and (contentp tok)
        (not (else-tag-p tok))
        (not (elif-tag-p tok))))
 
@@ -125,7 +128,7 @@
                  do
                  (push
                   (cond
-                    ((typep tok '<content-tag>)
+                    ((starts-block-p tok)
                      ;; Start a block
                      (make-instance '<block>
                                     :name (name tok)
