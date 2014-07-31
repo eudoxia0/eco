@@ -16,19 +16,19 @@
              "a b c ")))
 
 (test content-tag
-  (is-true (typep (parse-template "{% a b c %}")
+  (is-true (typep (esrap:parse 'eco.parser::content-tag "{% a b c %}")
                   '<content-tag>))
   (is-true
-   (let* ((parsed (parse-template "{% test 1 2 3 %}"))
+   (let* ((parsed (esrap:parse 'eco.parser::content-tag "{% test 1 2 3 %}"))
           (name (name parsed))
           (content (content parsed)))
      (and (equal name "test")
           (equal content "1 2 3 ")))))
 
 (test end-tag
-  (is-true (typep (parse-template "{% endtest %}")
+  (is-true (typep (esrap:parse 'eco.parser::end-tag "{% endtest %}")
                   '<end-tag>))
-  (is (equal (name (parse-template "{% endtest %}"))
+  (is (equal (name (esrap:parse 'eco.parser::end-tag "{% endtest %}"))
              "test")))
 
 (test block
