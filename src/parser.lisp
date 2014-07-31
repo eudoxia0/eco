@@ -93,23 +93,23 @@
 (defun parse-template (template-string)
   (parse 'expression template-string))
 
-(defun is-delim (tok end-name)
+(defun delimp (tok end-name)
   (and (typep tok '<end-tag>)
        (equal (name tok) end-name)))
 
-(defun is-else-tag (tok)
+(defun else-tag-p (tok)
   (and (typep tok '<content-tag>)
        (equal (name tok) "else")
        (equal (content tok) "")))
 
-(defun is-elif-tag (tok)
+(defun elif-tag-p (tok)
   (and (typep tok '<content-tag>)
        (equal (name tok) "elif")))
 
-(defun starts-block (tok)
+(defun starts-block-p (tok)
   (and (typep tok '<content-tag>)
-       (not (is-else-tag tok))
-       (not (is-elif-tag tok))))
+       (not (else-tag-p tok))
+       (not (elif-tag-p tok))))
 
 (defun process-tokens (tokens)
   (labels ((next-token ()
@@ -120,7 +120,7 @@
                    (tok (next-token)))
                (loop while (and tok
                                 (if end-name
-                                    (not (is-delim tok end-name))
+                                    (not (delimp tok end-name))
                                     t))
                  do
                  (push
@@ -131,7 +131,7 @@
                                     :name (name tok)
                                     :content (content tok)
                                     :body (parse-tokens (name tok))))
-                    ((and end-name (is-delim tok end-name))
+                    ((and end-name (delimp tok end-name))
                      (error "Parsing error: Early termination."))
                     ((typep tok '<end-tag>)
                      (error "Parsing error."))
