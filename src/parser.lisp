@@ -40,7 +40,7 @@
   (format stream "{% ~A ~A%}" (name tag) (content tag)))
 
 (defmethod print-object ((tag <end-tag>) stream)
-  (format stream "{% end~A%}" (name tag)))
+  (format stream "{% end~A %}" (name tag)))
 
 (defmethod print-object ((block <block>) stream)
   (format stream "{% ~A ~A%}~&~{~A~&~}{% end~A%}"
@@ -86,22 +86,36 @@
   (:destructure (&rest text)
     (text text)))
 
-(defrule expression (* (or block expr-tag body-block)))
+(defrule tag (or expr-tag end-tag content-tag))
 
-(defrule block (and content-tag expression end-tag)
-  (:destructure (ct body et)
-    (if (equal (name ct) (name et))
-        (make-instance '<block>
-                       :name (name ct)
-                       :content (content ct)
-                       :body body)
-        (error "End tag does not match start tag."))))
+(defrule expression (* (or tag body-block)))
 
 (defun parse-template (template-string)
-  (let ((parsed (parse 'expression template-string)))
-    (if (rest parsed)
-        (make-instance '<block>
-                       :name "progn"
-                       :content ""
-                       :body parsed)
-        (first parsed))))
+  (parse 'expression template-string))
+
+(defun process-tokens (tokens)
+  (labels ((next-token ()
+             (prog1 (first tokens)
+               (setf tokens (rest tokens))))
+           (parse-tokens (&optional end-name)
+             (let ((list (list))
+                   (tok (next-token)))
+               (loop while tok do
+                 (push
+                  (cond
+                    ((typep tok '<content-tag>)
+                     ;; Start a block
+                     (make-instance '<block>
+                                    :name (name tok)
+                                    :content (content tok)
+                                    :body (let ((list (parse-tokens (name tok))))
+                                            (subseq list 0 (1- (length list))))))
+                    ((and (typep tok '<end-tag>)
+                          (equal (name tok) end-name))
+                     nil)
+                    (t
+                     tok))
+                  list)
+                 (setf tok (next-token)))
+               (reverse list))))
+    (parse-tokens)))
