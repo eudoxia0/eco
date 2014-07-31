@@ -25,7 +25,7 @@
   ((name :reader name :initarg :name :type string)
    (content :reader content :initarg :content :type string)))
 
-(defclass <end-tag> (<no-content-tag>)
+(defclass <end-tag> (<tag>)
   ((name :reader name :initarg :name :type string)))
 
 (defclass <block> (<content-tag>)
@@ -82,13 +82,11 @@
     (make-instance '<end-tag>
                    :name (text text))))
 
-(defrule body-block (+ character)
+(defrule body-block (+ (not (and (or "<" "{") "%")))
   (:destructure (&rest text)
     (text text)))
 
-(defrule tag (or end-tag expr-tag content-tag))
-
-(defrule expression (* (or tag block body-block)))
+(defrule expression (* (or block expr-tag body-block)))
 
 (defrule block (and content-tag expression end-tag)
   (:destructure (ct body et)
