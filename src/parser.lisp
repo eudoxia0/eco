@@ -97,10 +97,17 @@
   (labels ((next-token ()
              (prog1 (first tokens)
                (setf tokens (rest tokens))))
+           (is-delim (tok end-name)
+             (and (typep tok '<end-tag>)
+                  (equal (name tok) end-name)))
            (parse-tokens (&optional end-name)
              (let ((list (list))
                    (tok (next-token)))
-               (loop while tok do
+               (loop while (and tok
+                                (if end-name
+                                    (not (is-delim tok end-name))
+                                    t))
+                 do
                  (push
                   (cond
                     ((typep tok '<content-tag>)
@@ -108,11 +115,11 @@
                      (make-instance '<block>
                                     :name (name tok)
                                     :content (content tok)
-                                    :body (let ((list (parse-tokens (name tok))))
-                                            (subseq list 0 (1- (length list))))))
-                    ((and (typep tok '<end-tag>)
-                          (equal (name tok) end-name))
-                     nil)
+                                    :body (parse-tokens (name tok))))
+                    ((and end-name (is-delim tok end-name))
+                     (error "Parsing error: Early termination."))
+                    ((typep tok '<end-tag>)
+                     (error "Parsing error."))
                     (t
                      tok))
                   list)
