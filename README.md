@@ -116,8 +116,6 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 Eco uses esrap to parse templates, which it then compiles down to Common Lisp
 code.
 
-## Tag Hierarchy
-
 # License
 
 Copyright (c) 2014 Fernando Borretti (eudoxiahp@gmail.com)
