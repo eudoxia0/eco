@@ -18,6 +18,7 @@
 ;; Block: { ... }
 (defrule block (and "{" expression "}")
   (:destructure (open body close)
+    (declare (ignore open close))
     (make-instance '<block> :body body)))
 
 ;; Statement: @...{ ... }
@@ -25,6 +26,7 @@
 
 (defrule statement (and "@" (* code-char) (+ block))
   (:destructure (at code body)
+    (declare (ignore at))
     (make-instance '<statement>
                    :code (text code)
                    :body body)))
@@ -44,45 +46,7 @@
 (defmethod print-object ((statement <statement>) stream)
   (format stream "@~A~{~A~}" (code statement) (body statement)))
 
-#|
-(defun contentp (tok)
-  (typep tok '<content-tag>))
-
-(defun delimp (tok end-name)
-  (and (typep tok '<end-tag>)
-       (equal (name tok) end-name)))
-
-(defun process-tokens (tokens)
-  (labels ((next-token ()
-             (prog1 (first tokens)
-               (setf tokens (rest tokens))))
-           (parse-tokens (&optional end-name)
-             (let ((list (list))
-                   (tok (next-token)))
-               (loop while (and tok
-                                (if end-name
-                                    (not (delimp tok end-name))
-                                    t))
-                 do
-                 (push
-                  (cond
-                    ((contentp tok)
-                     ;; Start a block
-                     (make-instance '<block>
-                                    :name (name tok)
-                                    :content (content tok)
-                                    :body (parse-tokens (name tok))))
-                    ((and end-name (delimp tok end-name))
-                     (error "Parsing error: Early termination."))
-                    ((typep tok '<end-tag>)
-                     (error "Parsing error."))
-                    (t
-                     tok))
-                  list)
-                 (setf tok (next-token)))
-               (reverse list))))
-    (first (parse-tokens))))
+;;; Interface
 
 (defun parse-template (template-string)
-  (process-tokens (parse 'expression template-string)))
-|#
+  (parse 'expression template-string))
