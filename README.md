@@ -24,26 +24,26 @@
 A basic template (`.eco` extension) looks like this:
 
 ```html
-{% template index title &optional posts %}
+@template index title &optional posts {
   <!DOCTYPE html>
   <html>
     <head>
-      <title><% title %></title>
+      <title>@{title}</title>
     </head>
     <body>
-      {% if posts %}
+      @if posts {
         <h1>Recent Posts</h1>
         <ul id="post-list">
-          {% loop for (title . snippet) in posts %}
-            <li><% title %> - <% snippet %></li>
-          {% endloop %}
+          @loop for (title . snippet) in posts {
+            <li>@{title} - @{title}</li>
+          }
         </ul>
-      {% else %}
+      } {
         <span>No recent posts.</span>
-      {% endif %}
+      }
     </body>
   </html>
-{% endtemplate %}
+}
 ```
 
 To load this template, put this in your system definition file:
@@ -63,9 +63,8 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 
 # Tags
 
-- `<% [expr] %>` becomes `(print-object [expr])`.
-- `{% tag [expr] %}[body]{% endtag %}` becomes `(tag [expr] (emit [body]))`, with the
-  exception of the `if` statement.
+- `@{<expr>}` becomes `(print-object <expr>)`.
+- `@<expr>{ <body> }` becomes `(print-object (<expr> (emit <body>)))`.
 
 # Options
 
@@ -80,10 +79,12 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 **Syntax:**
 
 ```html
-{% template <name> <arguments>* %}
+@template <name> <arguments>* {
   <body>
-{% endtemplate %}
+}
 ```
+
+Defines a named template.
 
 # Examples
 
@@ -92,18 +93,18 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 **Syntax:**
 
 ```html
-{% if <test> %}
+@if test {
   <body>
-{% endif %}
+}
 
-{% if <test> %}
-  {% progn %}
-    <true branch>
-  {% endprogn %}
-  {% progn %}
-    <false branch>
-  {% endprogn %}
-{% endif %}
+@if test {
+  @{
+    <true-branch>
+  }
+  @{
+    <false-branch>
+  }
+}
 ```
 
 # Implementation
