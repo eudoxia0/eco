@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage eco.compiler
-  (:use :cl :eco.parser))
+  (:use :cl :eco.parser)
+  (:export :compile-template))
 (in-package :eco.compiler)
 
 (defmethod emit ((str string)) str)
@@ -30,3 +31,6 @@
               (name block)
               (content block)
               (emit-list (body block)))))
+
+(defun compile-template (node)
+  (read-from-string (emit node)))

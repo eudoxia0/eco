@@ -85,6 +85,8 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 {% endtemplate %}
 ```
 
+# Examples
+
 ## `if`
 
 **Syntax:**
@@ -95,19 +97,12 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 {% endif %}
 
 {% if <test> %}
-  <true-branch>
-{% else %}
-  <false-branch>
-{% endif %}
-
-{% if <test> %}
-  <true-branch>
-{% elif <test2> %}
-  <another-branch>
-{% elif <test3> %}
-  <another-branch>
-{% else %}
-  <else-branch>
+  {% progn %}
+    <true branch>
+  {% endprogn %}
+  {% progn %}
+    <false branch>
+  {% endprogn %}
 {% endif %}
 ```
 
