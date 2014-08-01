@@ -41,7 +41,9 @@
 
 (test expr-tag
   (is (equal (eco.compiler::emit (eco.parser:parse-template "<%%>"))
-             "(format *eco-stream* \"~A\" ())")))
+             "(format *eco-stream* \"~A\" ())"))
+  (is (equal (eco.compiler::emit (eco.parser:parse-template "<% f 1 2 3 %>"))
+             "(format *eco-stream* \"~A\" (f 1 2 3 ))")))
 
 (run! 'parser)
 (run! 'compiler)
