@@ -35,4 +35,13 @@
   (is-true (typep (parse-template "{% block %} body {% endblock %}")
                   '<block>)))
 
+(def-suite compiler
+  :description "Testing the compiler.")
+(in-suite compiler)
+
+(test expr-tag
+  (is (equal (eco.compiler::emit (eco.parser:parse-template "<%%>"))
+             "(format *eco-stream* \"~A\" ())")))
+
 (run! 'parser)
+(run! 'compiler)
