@@ -97,20 +97,6 @@
   (and (typep tok '<end-tag>)
        (equal (name tok) end-name)))
 
-(defun else-tag-p (tok)
-  (and (contentp tok)
-       (equal (name tok) "else")
-       (equal (content tok) "")))
-
-(defun elif-tag-p (tok)
-  (and (contentp tok)
-       (equal (name tok) "elif")))
-
-(defun starts-block-p (tok)
-  (and (contentp tok)
-       (not (else-tag-p tok))
-       (not (elif-tag-p tok))))
-
 (defun process-tokens (tokens)
   (labels ((next-token ()
              (prog1 (first tokens)
@@ -125,7 +111,7 @@
                  do
                  (push
                   (cond
-                    ((starts-block-p tok)
+                    ((contentp tok)
                      ;; Start a block
                      (make-instance '<block>
                                     :name (name tok)
