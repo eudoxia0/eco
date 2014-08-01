@@ -4,35 +4,30 @@
   (:export :compile-template))
 (in-package :eco.compiler)
 
-#|
-(defmethod emit ((str string)) str)
-
-(defmethod emit ((tag <expr-tag>))
-  (format nil "(format *eco-stream* \"~~A\" (~A))" (content tag)))
-
-(defun emit-list (list)
-  (mapcar #'(lambda (elem) (emit elem)) list))
-
 (defparameter +template-def+
 "(defun ~A (~A)
   (with-output-to-string (*eco-parser*) ~{~A ~}))")
 
-(defun emit-template-definition (name arg-text body)
-  (format nil +template-def+ name arg-text (emit-list body)))
+(defmethod emit ((str string)) str)
 
-(defmethod emit ((block <block>))
-  (if (equal (name block) "template")
-      (let* ((text (content block))
-             (template-name (subseq text
-                                    0
-                                    (position #\Space text)))
-             (arg-text (subseq text (1+ (position #\Space text)))))
-        (emit-template-definition template-name arg-text (body block)))
-      (format nil "(format *eco-stream* \"~~A\" (~A ~A ~{~A ~}))"
-              (name block)
-              (content block)
-              (emit-list (body block)))))
+(defun emit-expression (expr)
+  (format nil "(format *eco-stream* \"~~A\" ~A)"
+          (emit expr)))
 
-(defun compile-template (node)
-  (read-from-string (emit node)))
-|#
+(defun emit-statement (code body)
+  (format nil "(format *eco-stream* \"~~A\" (~A ~{~A ~})"
+          code body))
+
+(defmethod emit ((statement <statement>))
+  (cond
+    ((equal (code statement) "")
+     ;; The code is empty, so the statement is of the form '@{block}'. In these
+     ;; cases, what we do is just emit the first block with not parentheses
+     (emit-expression (first (body statement))))
+    (t
+     ;; Arbitrary statement. The code of the form '@<code><block>+' becomes
+     ;; (<code< <block>+).
+     (emit-statement (code statement) (body statement)))))
+
+(defun compile-template (element)
+  (read-from-string (emit element)))
