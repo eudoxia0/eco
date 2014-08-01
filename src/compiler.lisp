@@ -8,4 +8,8 @@
 
 (defmethod emit ((block <block>))
   (format nil "(format *eco-stream* \"~~A\" (~A ~A ~{~A ~}))"
-          (name block) (content block) (body block)))
+          (name block)
+          (content block)
+          (map #'(lambda (elem)
+                   (emit elem))
+               (body block))))
