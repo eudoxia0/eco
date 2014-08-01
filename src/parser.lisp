@@ -90,9 +90,6 @@
 
 (defrule expression (* (or tag body-block)))
 
-(defun parse-template (template-string)
-  (parse 'expression template-string))
-
 (defun contentp (tok)
   (typep tok '<content-tag>))
 
@@ -143,4 +140,7 @@
                   list)
                  (setf tok (next-token)))
                (reverse list))))
-    (parse-tokens)))
+    (first (parse-tokens))))
+
+(defun parse-template (template-string)
+  (process-tokens (parse 'expression template-string)))
