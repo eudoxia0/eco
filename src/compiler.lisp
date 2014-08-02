@@ -4,6 +4,8 @@
   (:export :compile-template))
 (in-package :eco.compiler)
 
+;;; Utilities
+
 (defun code-fn (str)
   "\"herp derp berp\" -> \"herp\""
   (subseq str 0 (position #\Space str)))
@@ -16,13 +18,8 @@
 "(defun ~A (~A)
   (with-output-to-string (*eco-parser*) ~{~A ~}))")
 
-(defmethod emit ((list list))
-  (mapcar #'(lambda (elem) (emit elem)) list))
-
 (defun define-template (name arg-text body)
   (format nil +template-def+ name arg-text (emit body)))
-
-(defmethod emit ((str string)) str)
 
 (defun emit-expression (expr)
   (format nil "(format *eco-stream* \"~~A\" ~A)"
@@ -31,6 +28,13 @@
 (defun emit-statement (code body)
   (format nil "(format *eco-stream* \"~~A\" (~A ~{~A ~}))"
           code (emit body)))
+
+;;; Compiler
+
+(defmethod emit ((str string)) str)
+
+(defmethod emit ((list list))
+  (mapcar #'(lambda (elem) (emit elem)) list))
 
 (defmethod emit ((block <block>))
   (emit (body block)))
