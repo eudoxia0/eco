@@ -16,9 +16,11 @@
 "(defun ~A (~A)
   (with-output-to-string (*eco-parser*) ~{~A ~}))")
 
+(defmethod emit ((list list))
+  (mapcar #'(lambda (elem) (emit elem)) list))
+
 (defun define-template (name arg-text body)
-  (format nil +template-def+ name arg-text
-          (mapcar #'(lambda (elem) (emit elem)) body)))
+  (format nil +template-def+ name arg-text (emit body)))
 
 (defmethod emit ((str string)) str)
 
@@ -27,8 +29,11 @@
           (emit expr)))
 
 (defun emit-statement (code body)
-  (format nil "(format *eco-stream* \"~~A\" (~A ~{~A ~})"
-          code body))
+  (format nil "(format *eco-stream* \"~~A\" (~A ~{~A ~}))"
+          code (emit body)))
+
+(defmethod emit ((block <block>))
+  (emit (body block)))
 
 (defmethod emit ((statement <statement>))
   (cond
