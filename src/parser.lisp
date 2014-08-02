@@ -9,6 +9,10 @@
 (defclass <block> ()
   ((body :reader body :initarg :body)))
 
+(defclass <statement> ()
+  ((code :reader code :initarg :code)
+   (body :reader body :initarg :body)))
+
 ;;; Parsing rules
 
 ;; Block: { ... }
@@ -16,26 +20,23 @@
   (:destructure (open body close)
     (make-instance '<block> :body body)))
 
+;; Statement: @...{ ... }
+(defrule code-char (not (or "{" "}")))
+
+(defrule statement (and "@" (* code-char) (+ block))
+  (:destructure (at code body)
+    (make-instance '<statement>
+                   :code (text code)
+                   :body body)))
+
+;; Raw text
+(defrule raw-text (* (not (or "{" "}")))
+  (:destructure (&rest text)
+    (text text)))
+
+(defrule expression (or statement raw-text))
+
 #|
-
-;;; Block classes
-
-(defclass <tag> () ())
-
-(defclass <expr-tag> (<tag>)
-  ((content :reader content
-            :initarg :content
-            :type string)))
-
-(defclass <content-tag> (<tag>)
-  ((name :reader name :initarg :name :type string)
-   (content :reader content :initarg :content :type string)))
-
-(defclass <end-tag> (<tag>)
-  ((name :reader name :initarg :name :type string)))
-
-(defclass <block> (<content-tag>)
-  ((body :reader body :initarg :body)))
 
 ;;; Pretty-printing
 
