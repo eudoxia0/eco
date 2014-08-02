@@ -4,6 +4,7 @@
   (:export :compile-template))
 (in-package :eco.compiler)
 
+#|
 (defmethod emit ((str string)) str)
 
 (defmethod emit ((tag <expr-tag>))
@@ -34,3 +35,4 @@
 
 (defun compile-template (node)
   (read-from-string (emit node)))
+|#

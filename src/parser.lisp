@@ -1,16 +1,22 @@
 (in-package :cl-user)
 (defpackage eco.parser
   (:use :cl :esrap)
-  (:export :<tag>
-           :<expr-tag>
-           :<content-tag>
-           :<end-tag>
-           :<block>
-           :name
-           :content
-           :body
-           :parse-template))
+  (:export :parse-template))
 (in-package :eco.parser)
+
+;;; Element classes
+
+(defclass <block> ()
+  ((body :reader body :initarg :body)))
+
+;;; Parsing rules
+
+;; Block: { ... }
+(defrule block (and "{" expression "}")
+  (:destructure (open body close)
+    (make-instance '<block> :body body)))
+
+#|
 
 ;;; Block classes
 
@@ -130,3 +136,4 @@
 
 (defun parse-template (template-string)
   (process-tokens (parse 'expression template-string)))
+|#
