@@ -19,10 +19,13 @@
 
 ;;; Parsing rules
 
+(defrule ws (+ (or #\Space #\Tab #\Newline #\Linefeed #\Backspace
+                   #\Page #\Return #\Rubout)))
+
 ;; Block: { ... }
-(defrule block (and "{" expression "}")
-  (:destructure (open body close)
-    (declare (ignore open close))
+(defrule block (and "{" expression "}" (* ws))
+  (:destructure (open body close ws)
+    (declare (ignore open close ws))
     (make-instance '<block> :body body)))
 
 ;; Statement: @...{ ... }
