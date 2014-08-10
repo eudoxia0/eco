@@ -35,7 +35,7 @@ A basic template (`.eco` extension) looks like this:
         <h1>Recent Posts</h1>
         <ul id="post-list">
           @loop for (title . snippet) in posts {
-            <li>@{title} - @{title}</li>
+            <li>@{title} - @{snippet}</li>
           }
         </ul>
       } {
