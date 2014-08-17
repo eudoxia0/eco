@@ -1,10 +1,9 @@
 (in-package :cl-user)
 (defpackage eco-test
-  (:use :cl :eco.parser :fiveam))
+  (:use :cl :eco.parser :eco.compiler :fiveam))
 (in-package :eco-test)
 
-(def-suite parser
-  :description "Testing the parser.")
+(def-suite parser)
 (in-suite parser)
 
 (test rules
@@ -17,4 +16,13 @@
   (is-true (typep (parse-template "@derp{1 2 3}") '<statement>))
   (is-true (typep (parse-template "@derp{a}{b}") '<statement>)))
 
+(def-suite compiler)
+(in-suite compiler)
+
+(test compiling
+  (is (equal "(format *eco-stream* \"~A\" (if cond tb fn ))"
+             (compile-template
+              (parse-template "@if cond{tb}{fn}")))))
+
 (run! 'parser)
+(run! 'compiler)
