@@ -60,10 +60,14 @@
 
 (defun insert-package (code package-def)
   (declare (type string code))
-  (format t "~A~&(in-package ~A)~&~%~A"
-          `(cl:defpackage ,@package-def)
-          (first package-def)
-          code))
+  (concatenate 'string
+               (format t "~A~&(in-package ~A)~&"
+                       `(cl:defpackage ,@package-def)
+                       (first package-def))
+               code))
 
-(defun compile-template (element package-def)
-  (read-from-string (insert-package (emit element) package-def)))
+(defun compile-template (element &optional package-def)
+  (if package-def
+      (insert-package (emit element)
+                      package-def)
+      (emit element)))
