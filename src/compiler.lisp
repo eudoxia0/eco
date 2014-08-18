@@ -58,16 +58,16 @@
 
 ;;; Packages
 
-(defun insert-package (code package-def)
+(defun insert-package (code package-name)
   (declare (type string code))
   (concatenate 'string
-               (format t "~A~&(in-package ~A)~&"
-                       `(cl:defpackage ,@package-def)
-                       (first package-def))
+               (format t "(in-package ~A)~%~%" (first package-name))
                code))
 
-(defun compile-template (element &optional package-def)
-  (if package-def
+;;; Interface
+
+(defun compile-template (element &optional package-name)
+  (if package-name
       (insert-package (emit element)
-                      package-def)
+                      package-name)
       (emit element)))
