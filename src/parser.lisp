@@ -5,7 +5,8 @@
            :<statement>
            :code
            :body
-           :parse-template))
+           :parse-template
+           :parse-pathname))
 (in-package :eco.parser)
 
 ;;; Element classes
@@ -57,3 +58,13 @@
 
 (defun parse-template (template-string)
   (parse 'expression template-string))
+
+(defun slurp-file (path)
+  ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
+  (with-open-file (stream path)
+    (let ((seq (make-array (file-length stream) :element-type 'character :fill-pointer t)))
+      (setf (fill-pointer seq) (read-sequence seq stream))
+      seq)))
+
+(defun parse-pathname (template-pathname)
+  (parse-template (slurp-file template-pathname)))
