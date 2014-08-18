@@ -2,6 +2,8 @@
   :author "Fernando Borretti"
   :license "MIT"
   :depends-on (:eco :fiveam)
+  :defsystem-depends-on (:eco)
   :components ((:module "t"
                 :components
-                ((:file "eco")))))
+                ((:file "eco")
+                 (:file "test")))))

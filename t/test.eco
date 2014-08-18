@@ -1,0 +1,11 @@
+@template test title text {
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>@{title}</title>
+    </head>
+    <body>
+      @if{text}
+    </body>
+  </html>
+}
