@@ -7,7 +7,8 @@
                 :serial t
                 :components
                 ((:file "parser")
-                 (:file "compiler"))))
+                 (:file "compiler")
+                 (:file "asdf"))))
   :description "Fast, flexible, designer-friendly templates."
   :long-description
   #.(uiop:read-file-string
