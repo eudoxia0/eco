@@ -4,6 +4,7 @@
   :depends-on (:eco :fiveam)
   :defsystem-depends-on (:eco)
   :components ((:module "t"
+                :serial t
                 :components
                 ((:file "eco")
-                 (:file "test")))))
+                 (:eco-template "test")))))
