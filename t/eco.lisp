@@ -6,23 +6,24 @@
 (def-suite parser)
 (in-suite parser)
 
+(defmacro is-type (expr type)
+  `(is-true (typep ,expr ',type)))
+
 (test rules
-  (is-true (typep (esrap:parse 'eco.parser::block "{1 2 3}") '<block>))
-  (is-true (typep (esrap:parse 'eco.parser::block "{1 2 3}   ") '<block>)))
+  (is-type (esrap:parse 'eco.parser::block "{1 2 3}") <block>)
+  (is-type (esrap:parse 'eco.parser::block "{1 2 3}   ") <block>)
+  (is-type (esrap:parse 'eco.parser::code-char "1") character)
+  (is-type (esrap:parse 'eco.parser::raw-text "1") string)
+  (is-type (esrap:parse 'eco.parser::raw-text "232323") string))
 
 (test parsing
-  (is-true (typep (parse-template "") 'string))
-  (is-true (typep (parse-template "232323") 'string))
-  (is-true (typep (parse-template "@derp{1 2 3}") '<statement>))
-  (is-true (typep (parse-template "@derp{a}{b}") '<statement>)))
+  (is-type (parse-template "232323") string)
+  (is-type (parse-template "@derp{1 2 3}") <statement>)
+  (is-type (parse-template "@derp{a}{b}") <statement>)
+  (is-type (parse-template "@derp{a} {b} ") <statement>))
 
 (def-suite compiler)
 (in-suite compiler)
-
-(test compiling
-  (is (equal "(format *eco-stream* \"~A\" (if cond tb fn ))"
-             (compile-template
-              (parse-template "@if cond{tb}{fn}")))))
 
 (run! 'parser)
 (run! 'compiler)
