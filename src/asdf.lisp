@@ -16,32 +16,31 @@
             :initarg :package
             :reader template-package)))
 
-(defmethod perform ((o load-op) (component eco-template))
-  t)
-
-(defmethod output-files ((operation compile-op) (component eco-template))
+(defmethod output-files ((op compile-op) (component eco-template))
   (let* ((input-path (component-pathname component))
          (output-path (make-pathname :type "lisp"
                                      :defaults input-path)))
     (list output-path)))
 
-(defmethod perform ((o compile-op) (component eco-template))
-  (let ((compiled-template-path (first (output-files (make-instance 'process-op)
+(defmethod perform ((op compile-op) (component eco-template))
+  (let ((compiled-template-path (first (output-files (make-instance 'compile-op)
                                                      component))))
     (with-open-file (stream compiled-template-path
                             :direction :output
                             :if-exists :supersede
                             :if-does-not-exist :create)
-      (write-string stream
-                    (eco.compiler:compile-template
+      (write-string (eco.compiler:compile-template
                      (eco.parser:parse-pathname
                       (component-pathname component))
-                     (template-package component))))))
+                     (template-package component))
+                     stream))))
 
-(defmethod perform ((op load-source-op) (component eco-template))
-  (let ((compiled-template-path (first (output-files (make-instance 'process-op)
+(defmethod perform ((op load-op) (component eco-template))
+  (let ((compiled-template-path (first (output-files (make-instance 'load-op)
                                                      component))))
     (perform op (make-instance 'cl-source-file
                                :name (component-name component)
                                :parent (component-parent component)
                                :pathname compiled-template-path))))
+
+(import 'eco-test :asdf)
