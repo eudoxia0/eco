@@ -61,7 +61,7 @@
 (defun insert-package (code package-name)
   (declare (type string code))
   (concatenate 'string
-               (format t "(in-package ~A)~%~%" (first package-name))
+               (format t "(in-package ~A)~%~%" package-name)
                code))
 
 ;;; Interface
