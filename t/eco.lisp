@@ -20,7 +20,8 @@
   (is-type (parse-template "232323") string)
   (is-type (parse-template "@derp{1 2 3}") <statement>)
   (is-type (parse-template "@derp{a}{b}") <statement>)
-  (is-type (parse-template "@derp{a} {b} ") <statement>))
+  (is-type (parse-template "@derp{a} {b} ") <statement>)
+  (is-type (parse-template "@a{b}{@c{d}{e}}") <statement>))
 
 (def-suite compiler)
 (in-suite compiler)
