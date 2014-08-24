@@ -33,7 +33,7 @@ list."
                    #\Page #\Return #\Rubout)))
 
 ;; Block: { ... }
-(defrule block (and "{" (+ expression) "}" (* ws))
+(defrule block (and "{" expression "}" (* ws))
   (:destructure (open body close ws)
     (declare (ignore open close ws))
     (make-instance '<block> :body (one-or-many body))))
@@ -49,7 +49,7 @@ list."
                    :body body)))
 
 ;; Raw text
-(defrule raw-text (+ (not "}"))
+(defrule raw-text (+ (not (or "@" "}")))
   (:destructure (&rest text)
     (text text)))
 
