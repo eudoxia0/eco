@@ -9,6 +9,15 @@
            :parse-pathname))
 (in-package :eco.parser)
 
+;;; Utilities
+
+(defun one-or-many (list)
+  "If the list has one element, return it. If it has more than one, return the
+list."
+  (if (rest list)
+      list
+      (first list)))
+
 ;;; Element classes
 
 (defclass <block> ()
@@ -24,10 +33,10 @@
                    #\Page #\Return #\Rubout)))
 
 ;; Block: { ... }
-(defrule block (and "{" expression "}" (* ws))
+(defrule block (and "{" (+ expression) "}" (* ws))
   (:destructure (open body close ws)
     (declare (ignore open close ws))
-    (make-instance '<block> :body body)))
+    (make-instance '<block> :body (one-or-many body))))
 
 ;; Statement: @...{ ... }
 (defrule code-char (not (or "{" "}")))
@@ -40,11 +49,11 @@
                    :body body)))
 
 ;; Raw text
-(defrule raw-text (* (not (or "{" "}")))
+(defrule raw-text (+ (not "}"))
   (:destructure (&rest text)
     (text text)))
 
-(defrule expression (or statement raw-text))
+(defrule expression (+ (or statement raw-text)))
 
 ;;; Pretty-printing
 
@@ -57,7 +66,7 @@
 ;;; Interface
 
 (defun parse-template (template-string)
-  (parse 'expression template-string))
+  (one-or-many (parse 'expression template-string)))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
