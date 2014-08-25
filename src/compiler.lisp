@@ -31,13 +31,14 @@
 
 ;;; Compiler
 
-(defmethod emit ((str string)) str)
+(defmethod emit ((str string))
+  (format nil "(write-string *eco-stream* ~S)" str))
 
 (defmethod emit ((list list))
   (mapcar #'(lambda (elem) (emit elem)) list))
 
 (defmethod emit ((block <block>))
-  (emit (body block)))
+  (format nil "(progn ~A)" (emit (body block))))
 
 (defmethod emit ((statement <statement>))
   (cond
@@ -61,7 +62,7 @@
 (defun insert-package (code package-name)
   (declare (type string code))
   (concatenate 'string
-               (format t "(in-package ~A)~%~%" package-name)
+               (format nil "(in-package ~A)~%~%" package-name)
                code))
 
 ;;; Interface
