@@ -29,18 +29,20 @@
                             :direction :output
                             :if-exists :supersede
                             :if-does-not-exist :create)
-      (write-string (eco.compiler:compile-template
-                     (eco.parser:parse-pathname
-                      (component-pathname component))
-                     (template-package component))
-                     stream))))
+      (let* ((parsed (eco.parser:parse-pathname
+                      (component-pathname component)))
+             (compiled (eco.compiler:compile-template
+                        parsed
+                        (template-package component))))
+        (write-string compiled stream)))))
 
 (defmethod perform ((op load-op) (component eco-template))
-  (let ((compiled-template-path (first (output-files (make-instance 'load-op)
+  (let ((compiled-template-path (first (output-files (make-instance 'compile-op)
                                                      component))))
-    (perform op (make-instance 'cl-source-file
-                               :name (component-name component)
-                               :parent (component-parent component)
-                               :pathname compiled-template-path))))
+    (perform (make-instance 'compile-op)
+             (make-instance 'cl-source-file
+                            :name (component-name component)
+                            :parent (component-parent component)
+                            :pathname compiled-template-path))))
 
 (import 'eco-test :asdf)
