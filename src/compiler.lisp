@@ -16,29 +16,33 @@
 
 (defparameter +template-def+
 "(defun ~A (~A)
-  (with-output-to-string (*eco-parser*) ~{~A ~}))")
+  (with-output-to-string (*eco-stream*) ~A))")
 
 (defun define-template (name arg-text body)
   (format nil +template-def+ name arg-text (emit body)))
 
 (defun emit-expression (expr)
-  (format nil "(format *eco-stream* \"~~A\" ~A)"
-          (emit expr)))
+  (format nil "~A" (emit expr)))
 
 (defun emit-statement (code body)
-  (format nil "(format *eco-stream* \"~~A\" (~A ~{~A ~}))"
-          code (emit body)))
+  (format nil "(~A ~{~A~})" code (mapcar #'(lambda (elem) (emit elem)) body)))
 
 ;;; Compiler
 
 (defmethod emit ((str string))
-  (format nil "(write-string *eco-stream* ~S)" str))
+  (format nil "(write-string ~S *eco-stream*)" str))
 
 (defmethod emit ((list list))
-  (mapcar #'(lambda (elem) (emit elem)) list))
+  (format nil "(progn ~{~A ~})" (mapcar #'(lambda (elem) (emit elem))
+                                       list)))
 
 (defmethod emit ((block <block>))
-  (format nil "(progn ~A)" (emit (body block))))
+  (let ((body (body block)))
+    (if (typep body 'string)
+        body
+        (format nil "~{~A ~}"
+                (mapcar #'(lambda (elem) (emit elem))
+                        body)))))
 
 (defmethod emit ((statement <statement>))
   (cond
@@ -54,8 +58,15 @@
        (define-template template-name template-args (body statement))))
     (t
      ;; Arbitrary statement. The code of the form '@<code><block>+' becomes
-     ;; (<code< <block>+).
+     ;; (<code> <block>+).
      (emit-statement (code statement) (body statement)))))
+
+(defun emit-toplevel (code)
+  (format nil "~{~A~%~}"
+          (loop for elem in code collecting
+                (if (typep elem '<statement>)
+                    (emit elem)
+                    ""))))
 
 ;;; Packages
 
@@ -69,6 +80,6 @@
 
 (defun compile-template (element &optional package-name)
   (if package-name
-      (insert-package (emit element)
+      (insert-package (emit-toplevel element)
                       package-name)
-      (emit element)))
+      (emit-toplevel element)))

@@ -1,11 +1,4 @@
-@template test title text {
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <title>@{title}</title>
-    </head>
-    <body>
-      @if{text}
-    </body>
-  </html>
+@template test bool str list hash {
+@if bool{tb}{fb}
+@{test}
 }

@@ -1,22 +1,14 @@
 (in-package :cl-user)
 (defpackage eco.parser
   (:use :cl :esrap)
-  (:export :<block>
+  (:export :one-or-many
+           :<block>
            :<statement>
            :code
            :body
            :parse-template
            :parse-pathname))
 (in-package :eco.parser)
-
-;;; Utilities
-
-(defun one-or-many (list)
-  "If the list has one element, return it. If it has more than one, return the
-list."
-  (if (rest list)
-      list
-      (first list)))
 
 ;;; Element classes
 
@@ -29,14 +21,11 @@ list."
 
 ;;; Parsing rules
 
-(defrule ws (+ (or #\Space #\Tab #\Newline #\Linefeed #\Backspace
-                   #\Page #\Return #\Rubout)))
-
 ;; Block: { ... }
-(defrule block (and "{" expression "}" (* ws))
-  (:destructure (open body close ws)
-    (declare (ignore open close ws))
-    (make-instance '<block> :body (one-or-many body))))
+(defrule block (and "{" expression "}")
+  (:destructure (open body close)
+    (declare (ignore open close))
+    (make-instance '<block> :body body)))
 
 ;; Statement: @...{ ... }
 (defrule code-char (not (or "{" "}")))
@@ -66,7 +55,7 @@ list."
 ;;; Interface
 
 (defun parse-template (template-string)
-  (one-or-many (parse 'expression template-string)))
+  (parse 'expression template-string))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
