@@ -1,61 +1,90 @@
 (in-package :cl-user)
 (defpackage eco.parser
   (:use :cl :esrap)
-  (:export :one-or-many
-           :<block>
-           :<statement>
-           :code
+  (:import-from :split-sequence
+                :split-sequence-if)
+  (:export :<tag>
+           :name
            :body
            :parse-template
            :parse-pathname))
 (in-package :eco.parser)
 
+;;; Utilities
+
+(defparameter +whitespace+
+  (list #\Space #\Tab #\Newline #\Linefeed #\Backspace
+        #\Page #\Return #\Rubout))
+
+(defun whitespacep (char)
+  (member char +whitespace+))
+
+(defun trim-whitespace (str)
+  (string-trim +whitespace+ str))
+
 ;;; Element classes
 
-(defclass <block> ()
-  ((body :reader body :initarg :body)))
+(defclass <tag> ()
+  ((code :reader code :initarg :code)))
 
-(defclass <statement> ()
+(defclass <end-tag> (<tag>)
+  ())
+
+(defclass <block> ()
   ((code :reader code :initarg :code)
    (body :reader body :initarg :body)))
 
 ;;; Parsing rules
 
-;; Block: { ... }
-(defrule block (and "{" expression "}")
-  (:destructure (open body close)
+(defrule block-string (+ (not "%>"))
+  (:lambda (list) (text list)))
+
+(defrule block (and "<%" block-string "%>")
+  (:destructure (open code close)
     (declare (ignore open close))
-    (make-instance '<block> :body body)))
+    (let ((text (trim-whitespace code)))
+      (if (equal text "end")
+          (make-instance '<end-tag>)
+          (make-instance '<tag>
+                         :code text)))))
 
-;; Statement: @...{ ... }
-(defrule code-char (not (or "{" "}")))
+(defrule raw-text (+ (not "<%"))
+  (:lambda (list) (text list)))
 
-(defrule statement (and "@" (* code-char) (+ block))
-  (:destructure (at code body)
-    (declare (ignore at))
-    (make-instance '<statement>
-                   :code (text code)
-                   :body body)))
+(defrule expr (+ (or block raw-text)))
 
-;; Raw text
-(defrule raw-text (+ (not (or "@" "}")))
-  (:destructure (&rest text)
-    (text text)))
+;;; Token parsing
+;;; Take a list of either strings or <tag>s and turn it into a tree
 
-(defrule expression (+ (or statement raw-text)))
-
-;;; Pretty-printing
-
-(defmethod print-object ((block <block>) stream)
-  (format stream "{~&~A~&}" (body block)))
-
-(defmethod print-object ((statement <statement>) stream)
-  (format stream "@~A~{~A~}" (code statement) (body statement)))
+(defun parse-tokens (tokens)
+  (let ((tokens (copy-list tokens)))
+    (labels ((next-token ()
+               (prog1 (first tokens)
+                 (setf tokens (rest tokens))))
+             (rec-parse (&optional toplevel)
+               (let ((out (make-array 1 :adjustable 1 :fill-pointer 0))
+                     (tok (next-token)))
+                 (loop while (and tok (not (typep tok '<end-tag>))) do
+                   (vector-push-extend
+                    (cond
+                      ((typep tok '<tag>)
+                       ;; Start a block
+                       (make-instance '<block>
+                                      :code (code tok)
+                                      :body (rec-parse)))
+                      (t
+                       tok))
+                    out)
+                   (setf tok (next-token))
+                   (if (and (not tok) (not toplevel)) ;; Next tok is nil
+                       (error "Missing 'end' tag.")))
+                 out)))
+      (rec-parse t))))
 
 ;;; Interface
 
 (defun parse-template (template-string)
-  (parse 'expression template-string))
+  (parse-tokens (parse 'expr template-string)))
 
 (defun slurp-file (path)
   ;; Credit: http://www.ymeme.com/slurping-a-file-common-lisp-83.html
