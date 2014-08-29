@@ -10,25 +10,24 @@
   `(is-true (typep ,expr ',type)))
 
 (test rules
-  (is-type (esrap:parse 'eco.parser::block "{1 2 3}") <block>)
-  (is-type (esrap:parse 'eco.parser::block "{1 2 3}") <block>)
-  (is-type (esrap:parse 'eco.parser::code-char "1") character)
+  (equal (esrap:parse 'eco.parser::block-string " 1 2 3") " 1 2 3")
+  (equal (esrap:parse 'eco.parser::block-string "(fn (f (g 1) (h 1)))")
+         "(fn (f (g 1) (h 1)))")
+  (is-type (esrap:parse 'eco.parser::block "<% test %>") <tag>)
   (is-type (esrap:parse 'eco.parser::raw-text "1") string)
   (is-type (esrap:parse 'eco.parser::raw-text "232323") string))
 
 (test parsing
-  (is-type (first (parse-template "232323")) string)
-  (is-type (first (parse-template "@derp{1 2 3}")) <statement>)
-  (is-type (first (parse-template "@derp{a}{b}")) <statement>)
-  (is-type (first (parse-template "@derp{a}{b}")) <statement>)
-  (is-type (first (parse-template "@a{b}{@c{d}{e}}")) <statement>))
+  (is-type (parse-template "232323") vector)
+  (is-type (elt (parse-template "232323") 0) string)
+  (is-type (elt (parse-template "a b c") 0) string))
 
 (def-suite compiler)
 (in-suite compiler)
 
-(test compiling
-  (is (equal (eco-template::test t "test" (list 1 2 3) nil)
-             (format nil "~%tb~%test~%"))))
+;(test compiling
+;  (is (equal (eco-template::test t "test" (list 1 2 3) nil)
+;             (format nil "~%tb~%test~%"))))
 
 (run! 'parser)
 (run! 'compiler)
