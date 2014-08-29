@@ -4,8 +4,9 @@
   (:import-from :split-sequence
                 :split-sequence-if)
   (:export :<tag>
-           :name
+           :code
            :body
+           :<block>
            :parse-template
            :parse-pathname))
 (in-package :eco.parser)
