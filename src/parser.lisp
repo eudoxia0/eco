@@ -5,6 +5,7 @@
                 :split-sequence-if)
   (:export :<block>
            :<expr-tag>
+           :<else-tag>
            :code
            :body
            :parse-template
@@ -36,6 +37,8 @@
 (defclass <end-tag> (<tag>)
   ())
 
+(defclass <else-tag> (<tag>) ())
+
 (defclass <block> ()
   ((code :reader code :initarg :code)
    (body :reader body :initarg :body)))
@@ -52,10 +55,14 @@
         (make-instance '<expr-tag>
                        :code (trim-whitespace code))
         (let ((text (trim-whitespace code)))
-          (if (equal text "end")
-              (make-instance '<end-tag>)
-              (make-instance '<block-tag>
-                             :code text))))))
+          (cond
+            ((equal text "end")
+             (make-instance '<end-tag>))
+            ((equal text "else")
+             (make-instance '<else-tag>))
+            (t
+             (make-instance '<block-tag>
+                            :code text)))))))
 
 (defrule raw-text (+ (not "<%"))
   (:lambda (list) (text list)))
