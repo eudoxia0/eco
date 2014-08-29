@@ -2,13 +2,13 @@
   :version "0.1"
   :author "Fernando Borretti"
   :license "MIT"
-  :depends-on (:esrap)
+  :depends-on (:esrap
+               :split-sequence)
   :components ((:module "src"
                 :serial t
                 :components
                 ((:file "parser")
-                 (:file "compiler")
-                 (:file "asdf"))))
+                 (:file "compiler"))))
   :description "Fast, flexible, designer-friendly templates."
   :long-description
   #.(uiop:read-file-string
