@@ -1,11 +1,7 @@
-@template test bool str list hash {
-@if bool{tb}{fb}
-@{test}
-}
-
-<% template (test bool str list hash) %>
-  <% cond %>
-    <% bool %>true<% end %>
-    <% t %>false<% end %>
+<% deftemplate test (bool str list hash) %>
+  <% if bool %>
+    true
+  <% else %>
+    false
   <% end %>
 <% end %>
