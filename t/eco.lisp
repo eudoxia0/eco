@@ -13,7 +13,8 @@
   (equal (esrap:parse 'eco.parser::block-string " 1 2 3") " 1 2 3")
   (equal (esrap:parse 'eco.parser::block-string "(fn (f (g 1) (h 1)))")
          "(fn (f (g 1) (h 1)))")
-  (is-type (esrap:parse 'eco.parser::block "<% test %>") <tag>)
+  (is-type (esrap:parse 'eco.parser::tag "<%@ test %>") <expr-tag>)
+  (is-type (esrap:parse 'eco.parser::tag "<% test %>") eco.parser::<block-tag>)
   (is-type (esrap:parse 'eco.parser::raw-text "1") string)
   (is-type (esrap:parse 'eco.parser::raw-text "232323") string))
 

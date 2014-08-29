@@ -2,3 +2,10 @@
 @if bool{tb}{fb}
 @{test}
 }
+
+<% template (test bool str list hash) %>
+  <% cond %>
+    <% bool %>true<% end %>
+    <% t %>false<% end %>
+  <% end %>
+<% end %>

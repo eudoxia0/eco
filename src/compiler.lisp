@@ -13,6 +13,9 @@
   (format nil "(progn ~{~A ~})"
           (loop for elem across vec collecting (emit elem))))
 
+(defmethod emit ((expr <expr-tag>))
+  (format nil "(write-string ~A *eco-stream*)" (code expr)))
+
 (defmethod emit ((block <block>))
   (let ((body (body block)))
     (if (typep body 'string)
@@ -35,3 +38,14 @@
       (insert-package (emit-toplevel element)
                       package-name)
       (emit element)))
+
+;;; eco-template: The package where templates are compiled
+
+(defpackage eco-template
+  (:use :cl)
+  (:export :deftemplate))
+(in-package :eco-template)
+
+(defmacro deftemplate (name args &rest body)
+  `(defun ,name ,args ,@body))
+

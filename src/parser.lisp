@@ -3,10 +3,10 @@
   (:use :cl :esrap)
   (:import-from :split-sequence
                 :split-sequence-if)
-  (:export :<tag>
+  (:export :<block>
+           :<expr-tag>
            :code
            :body
-           :<block>
            :parse-template
            :parse-pathname))
 (in-package :eco.parser)
@@ -25,7 +25,12 @@
 
 ;;; Element classes
 
-(defclass <tag> ()
+(defclass <tag> () ())
+
+(defclass <expr-tag> ()
+  ((code :reader code :initarg :code)))
+
+(defclass <block-tag> (<tag>)
   ((code :reader code :initarg :code)))
 
 (defclass <end-tag> (<tag>)
@@ -40,19 +45,22 @@
 (defrule block-string (+ (not "%>"))
   (:lambda (list) (text list)))
 
-(defrule block (and "<%" block-string "%>")
+(defrule tag (and "<%" block-string "%>")
   (:destructure (open code close)
     (declare (ignore open close))
-    (let ((text (trim-whitespace code)))
-      (if (equal text "end")
-          (make-instance '<end-tag>)
-          (make-instance '<tag>
-                         :code text)))))
+    (if (char= (elt code 0) #\@)
+        (make-instance '<expr-tag>
+                       :code (trim-whitespace code))
+        (let ((text (trim-whitespace code)))
+          (if (equal text "end")
+              (make-instance '<end-tag>)
+              (make-instance '<block-tag>
+                             :code text))))))
 
 (defrule raw-text (+ (not "<%"))
   (:lambda (list) (text list)))
 
-(defrule expr (+ (or block raw-text)))
+(defrule expr (+ (or tag raw-text)))
 
 ;;; Token parsing
 ;;; Take a list of either strings or <tag>s and turn it into a tree
@@ -68,7 +76,7 @@
                  (loop while (and tok (not (typep tok '<end-tag>))) do
                    (vector-push-extend
                     (cond
-                      ((typep tok '<tag>)
+                      ((typep tok '<block-tag>)
                        ;; Start a block
                        (make-instance '<block>
                                       :code (code tok)

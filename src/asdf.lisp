@@ -3,11 +3,6 @@
 ;;;;     https://github.com/cffi/cffi/blob/master/grovel/asdf.lisp
 ;;;;
 
-;;; Define the default package for templates
-(in-package :cl-user)
-(defpackage eco-template
-  (:use :cl))
-
 (in-package :asdf)
 
 (defclass eco-template (source-file)
