@@ -51,9 +51,9 @@
 (defrule tag (and "<%" block-string "%>")
   (:destructure (open code close)
     (declare (ignore open close))
-    (if (char= (elt code 0) #\@)
+    (if (char= (elt code 0) #\=)
         (make-instance '<expr-tag>
-                       :code (trim-whitespace code))
+                       :code (subseq (trim-whitespace code) 1))
         (let ((text (trim-whitespace code)))
           (cond
             ((equal text "end")
