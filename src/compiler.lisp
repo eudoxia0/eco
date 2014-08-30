@@ -32,21 +32,17 @@
                 (emit elem)
                 ""))))
 
-;;; Packages
-
-(defun insert-package (code package-name)
-  (declare (type string code))
-  (concatenate 'string
-               (format nil "(in-package :~A)~%~%" package-name)
-               code))
-
 ;;; Interface
 
-(defun compile-template (element &optional package-name)
-  (if package-name
-      (insert-package (emit-toplevel element)
-                      package-name)
-      (emit-toplevel element)))
+(defun read-string-in-package (string package-name)
+  (let ((cur-package *package*))
+    (setf *package* (find-package package-name))
+    (prog1
+        (read-from-string string)
+      (setf *package* cur-package))))
+
+(defun compile-template (element &optional (package-name 'eco-template))
+  (read-string-in-package (emit-toplevel element) package-name))
 
 ;;; eco-template: The package where templates are compiled
 
