@@ -29,7 +29,7 @@
              (compiled (eco.compiler:compile-template
                         parsed
                         (template-package component))))
-        (write-string compiled stream)))))
+        (print compiled stream)))))
 
 (defmethod perform ((op load-op) (component eco-template))
   (let ((compiled-template-path (first (output-files (make-instance 'compile-op)
