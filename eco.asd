@@ -9,7 +9,8 @@
                 :components
                 ((:file "parser")
                  (:file "compiler")
-                 (:file "asdf"))))
+                 (:file "asdf")
+                 (:file "eco"))))
   :description "Fast, flexible, designer-friendly templates."
   :long-description
   #.(uiop:read-file-string
