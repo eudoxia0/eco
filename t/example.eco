@@ -1,0 +1,20 @@
+<% deftemplate (index title &optional posts) %>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title><%= title %></title>
+    </head>
+    <body>
+      <% if posts %>
+        <h1>Recent Posts</h1>
+        <ul id="post-list">
+          <% loop for (title . snippet) in posts %>
+            <li><%= title %> - <%= snippet %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <span>No recent posts.</span>
+      <% end %>
+    </body>
+  </html>
+<% end %>
