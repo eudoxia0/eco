@@ -7,14 +7,14 @@
 ;;; Compiler
 
 (defmethod emit ((str string))
-  (format nil "(write-string ~S *eco-stream*)" str))
+  (format nil "(write-string ~S eco-stream)" str))
 
 (defmethod emit ((vec vector))
   (format nil "(progn ~{~A ~})"
           (loop for elem across vec collecting (emit elem))))
 
 (defmethod emit ((expr <expr-tag>))
-  (format nil "(write-string ~A *eco-stream*)" (code expr)))
+  (format nil "(write-string ~A eco-stream)" (code expr)))
 
 (defmethod emit ((else <else-tag>)) "")
 
@@ -26,7 +26,7 @@
                 (loop for elem across body collecting (emit elem))))))
 
 (defun emit-toplevel (code)
-  (format nil "~{~A~%~}"
+  (format nil "(progn ~{~A~%~})"
           (loop for elem across code collecting
             (if (typep elem '<block>)
                 (emit elem)
@@ -54,6 +54,6 @@
 (defmacro deftemplate (name args &rest body)
   `(progn
      (defun ,name ,args
-       (with-output-to-string (*eco-stream*)
+       (with-output-to-string (eco-stream)
          ,@body))
      (compile ',name)))
