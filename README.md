@@ -23,7 +23,7 @@
 
 A basic template (`.eco` extension) looks like this:
 
-```html
+```erb
 <% deftemplate (index title &optional posts) %>
   <!DOCTYPE html>
   <html>
@@ -73,11 +73,11 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 
 # Reference
 
-## `template`
+## `deftemplate`
 
 **Syntax:**
 
-```html
+```erb
 <% deftemplate name (&rest args) %>
   <body>
 <% end %>
@@ -91,7 +91,7 @@ Defines a template.
 
 **Syntax:**
 
-```html
+```erb
 <% if cond %>
   true branch
 <% else %>
