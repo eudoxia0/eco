@@ -25,12 +25,4 @@
   (is-type (elt (parse-template "232323") 0) string)
   (is-type (elt (parse-template "a b c") 0) string))
 
-(def-suite compiler)
-(in-suite compiler)
-
-;(test compiling
-;  (is (equal (eco-template::test t "test" (list 1 2 3) nil)
-;             (format nil "~%tb~%test~%"))))
-
 (run! 'parser)
-(run! 'compiler)

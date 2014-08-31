@@ -5,3 +5,7 @@
     false
   <% end %>
 <% end %>
+
+<% deftemplate test2 () %>
+  test
+<% end %>

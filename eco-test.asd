@@ -7,4 +7,5 @@
                 :serial t
                 :components
                 ((:file "eco")
-                 (:eco-template "test")))))
+                 (:eco-template "test")
+                 (:file "test-asdf")))))
