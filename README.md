@@ -24,26 +24,26 @@
 A basic template (`.eco` extension) looks like this:
 
 ```html
-@template index title &optional posts {
+<% deftemplate (index title &optional posts) %>
   <!DOCTYPE html>
   <html>
     <head>
-      <title>@{title}</title>
+      <title><%= title %></title>
     </head>
     <body>
-      @if posts {
+      <% if posts %>
         <h1>Recent Posts</h1>
         <ul id="post-list">
-          @loop for (title . snippet) in posts {
-            <li>@{title} - @{snippet}</li>
-          }
+          <% loop for (title . snippet) in posts %>
+            <li><%= title %> - <%= snippet %></li>
+          <% end %>
         </ul>
-      } {
+      <% else %>
         <span>No recent posts.</span>
-      }
+      <% end %>
     </body>
   </html>
-}
+<% end %>
 ```
 
 To load this template, put this in your system definition file:
@@ -63,12 +63,11 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 
 # Tags
 
-- `@{<expr>}` becomes `(print-object <expr>)`.
-- `@<expr>{ <body> }` becomes `(print-object (<expr> (emit <body>)))`.
+- `<%= <expr> %>` becomes `<expr>`.
+- `<% <code> %><body><% end %>` becomes `(<code> <body>)`.
 
 # Options
 
-- `*autoescape*`: Automatically escape all expressions. Defaults to `NIL`.
 - `*template-package*`: The package the templates will be defined it. Defaults
   to `:eco-template`.
 
@@ -79,12 +78,12 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 **Syntax:**
 
 ```html
-@template <name> <arguments>* {
+<% deftemplate name (&rest args) %>
   <body>
-}
+<% end %>
 ```
 
-Defines a named template.
+Defines a template.
 
 # Examples
 
@@ -93,18 +92,11 @@ Defines a named template.
 **Syntax:**
 
 ```html
-@if test {
-  <body>
-}
-
-@if test {
-  @{
-    <true-branch>
-  }
-  @{
-    <false-branch>
-  }
-}
+<% if cond %>
+  true branch
+<% else %>
+  false branch
+<% end %>
 ```
 
 # Implementation
