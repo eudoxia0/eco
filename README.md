@@ -24,7 +24,7 @@
 A basic template (`.eco` extension) looks like this:
 
 ```erb
-<% deftemplate (index title &optional posts) %>
+<% deftemplate (index title &optional posts) () %>
   <!DOCTYPE html>
   <html>
     <head>
@@ -78,7 +78,7 @@ autoescape HTML. Use the `e` function for that. You have been warned.
 **Syntax:**
 
 ```erb
-<% deftemplate name (&rest args) %>
+<% deftemplate name (&rest args) (&rest options) %>
   <body>
 <% end %>
 ```
