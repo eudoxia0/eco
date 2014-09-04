@@ -1,6 +1,8 @@
 (in-package :cl-user)
 (defpackage eco.compiler
   (:use :cl :eco.parser)
+  (:import-from :split-sequence
+                :split-sequence-if)
   (:export :compile-template))
 (in-package :eco.compiler)
 
@@ -22,8 +24,21 @@
   (let ((body (body block)))
     (if (typep body 'string)
         body
-        (format nil "(~A ~{~A ~})" (code block)
-                (loop for elem across body collecting (emit elem))))))
+        (let ((else-tag-pos (position nil body :test #'(lambda (a b)
+                                                         (typep b '<else-tag>)))))
+          (if else-tag-pos
+              ;; We have an else tag
+              (format nil "(~A ~{~A ~})"
+                      (code block)
+                      (loop for elem in (split-sequence-if #'(lambda (elem)
+                                                               (typep elem '<else-tag>))
+                                                           body)
+                            collecting (format nil "(progn ~A)" (emit elem))))
+              ;; Just a regular block
+              (format nil "(~A ~{~A ~})"
+                      (code block)
+                      (loop for elem across body collecting (emit elem))))))))
+
 
 (defun emit-toplevel (code)
   (format nil "(progn ~{~A~%~})"
