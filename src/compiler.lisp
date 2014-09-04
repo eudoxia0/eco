@@ -56,4 +56,5 @@
      (defun ,name ,args
        (with-output-to-string (eco-stream)
          ,@body))
-     (compile ',name)))
+     (compile ',name)
+     (export ',name (find-package 'eco-template))))
