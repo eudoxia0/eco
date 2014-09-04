@@ -1,4 +1,4 @@
-<% deftemplate (index title &optional posts) %>
+<% deftemplate (index title &optional posts) () %>
   <!DOCTYPE html>
   <html>
     <head>

@@ -51,7 +51,7 @@
   (:export :deftemplate))
 (in-package :eco-template)
 
-(defmacro deftemplate (name args &rest body)
+(defmacro deftemplate (name args options &rest body)
   `(progn
      (defun ,name ,args
        (with-output-to-string (eco-stream)

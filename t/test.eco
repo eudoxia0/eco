@@ -1,4 +1,4 @@
-<% deftemplate test (bool str list hash) %>
+<% deftemplate test (bool str list hash) () %>
   <% if bool %>
     true
   <% else %>
@@ -6,6 +6,6 @@
   <% end %>
 <% end %>
 
-<% deftemplate test2 () %>
+<% deftemplate test2 () () %>
   test
 <% end %>
