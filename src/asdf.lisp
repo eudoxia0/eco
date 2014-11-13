@@ -11,15 +11,15 @@
             :initarg :package
             :reader template-package)))
 
-(defmethod output-files ((op compile-op) (component eco-template))
-  (let* ((input-path (component-pathname component))
-         (output-path (make-pathname :type "lisp"
-                                     :defaults input-path)))
-    (list output-path)))
+(defmethod compiled-template-path ((component eco-template))
+  (make-pathname :type "lisp"
+                 :defaults (component-pathname component)))
+
+(defmethod output-files (op (component eco-template))
+  nil)
 
 (defmethod perform ((op compile-op) (component eco-template))
-  (let ((compiled-template-path (first (output-files (make-instance 'compile-op)
-                                                     component))))
+  (let ((compiled-template-path (compiled-template-path component)))
     (with-open-file (stream compiled-template-path
                             :direction :output
                             :if-exists :supersede
@@ -32,8 +32,7 @@
         (print compiled stream)))))
 
 (defmethod perform ((op load-op) (component eco-template))
-  (let ((compiled-template-path (first (output-files (make-instance 'compile-op)
-                                                     component))))
+  (let ((compiled-template-path (compiled-template-path component)))
     (perform (make-instance 'load-source-op)
              (make-instance 'cl-source-file
                             :name (component-name component)
