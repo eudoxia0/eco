@@ -2,6 +2,7 @@
   :version "0.1"
   :author "Fernando Borretti"
   :license "MIT"
+  :homepage "https://github.com/eudoxia0/eco"
   :depends-on (:esrap
                :split-sequence)
   :components ((:module "src"
