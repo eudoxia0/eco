@@ -1,5 +1,7 @@
 # Eco - Fast, flexible, designer-friendly templates.
 
+[![Build Status](https://travis-ci.org/eudoxia0/eco.svg?branch=master)](https://travis-ci.org/eudoxia0/eco)
+
 # Goals
 
 - **Simple:** Eco is essentially just a string concatenator. It introduces no
