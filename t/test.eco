@@ -1,11 +1,11 @@
 <% deftemplate test (bool str list hash) () %>
-  <% if bool %>
+ <% if bool %>
     true
   <% else %>
     false
   <% end %>
 <% end %>
 
-<% deftemplate test2 () () %>
-  test
+<% deftemplate test2 (string-to-escape) () %>
+  <%= string-to-escape %>
 <% end %>

@@ -16,7 +16,7 @@
           (loop for elem across vec collecting (emit elem))))
 
 (defmethod emit ((expr <expr-tag>))
-  (format nil "(write-string ~A eco-stream)" (code expr)))
+  (format nil "(write-string (e ~A) eco-stream)" (code expr)))
 
 (defmethod emit ((else <else-tag>)) "")
 
@@ -63,13 +63,23 @@
 
 (defpackage eco-template
   (:use :cl)
-  (:export :deftemplate))
+  (:export :deftemplate
+           :e))
 (in-package :eco-template)
 
-(defmacro deftemplate (name args options &rest body)
+(defun e (string)
+  "Escape a string."
+  (who:escape-string string))
+
+(defmacro deftemplate (name args (&key (escape-html t)) &rest body)
   `(progn
      (defun ,name ,args
        (with-output-to-string (eco-stream)
-         ,@body))
+         ,(if (not escape-html)
+              `(flet ((e (string)
+                        string))
+                 ,@body)
+              `(progn
+                 ,@body))))
      (compile ',name)
      (export ',name (find-package 'eco-template))))
