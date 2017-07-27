@@ -33,7 +33,7 @@
 
 (defmethod perform ((op load-op) (component eco-template))
   (let ((compiled-template-path (compiled-template-path component)))
-    (perform (make-instance 'load-source-op)
+    (perform 'load-source-op
              (make-instance 'cl-source-file
                             :name (component-name component)
                             :parent (component-parent component)
