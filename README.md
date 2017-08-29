@@ -26,7 +26,7 @@
 A basic template (`.eco` extension) looks like this:
 
 ```erb
-<% deftemplate (index title &optional posts) () %>
+<% deftemplate index (title &optional posts) () %>
   <!DOCTYPE html>
   <html>
     <head>
