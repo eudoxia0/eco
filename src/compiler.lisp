@@ -1,4 +1,30 @@
 (in-package :cl-user)
+
+;;; eco-template: The package where templates are compiled
+
+(defpackage eco-template
+  (:use :cl)
+  (:export :deftemplate
+           :e))
+(in-package :eco-template)
+
+(defun e (string)
+  "Escape a string."
+  (who:escape-string string))
+
+(defmacro deftemplate (name args (&key (escape-html t)) &rest body)
+  `(progn
+     (defun ,name ,args
+       (with-output-to-string (%eco-stream)
+         ,(if (not escape-html)
+              `(flet ((e (string)
+                        string))
+                 ,@body)
+              `(progn
+                 ,@body))))
+     (compile ',name)
+     (export ',name (find-package 'eco-template))))
+
 (defpackage eco.compiler
   (:use :cl :eco.parser)
   (:import-from :split-sequence
@@ -59,27 +85,3 @@
 (defun compile-template (element &optional (package-name 'eco-template))
   (read-string-in-package (emit-toplevel element) package-name))
 
-;;; eco-template: The package where templates are compiled
-
-(defpackage eco-template
-  (:use :cl)
-  (:export :deftemplate
-           :e))
-(in-package :eco-template)
-
-(defun e (string)
-  "Escape a string."
-  (who:escape-string string))
-
-(defmacro deftemplate (name args (&key (escape-html t)) &rest body)
-  `(progn
-     (defun ,name ,args
-       (with-output-to-string (eco-stream)
-         ,(if (not escape-html)
-              `(flet ((e (string)
-                        string))
-                 ,@body)
-              `(progn
-                 ,@body))))
-     (compile ',name)
-     (export ',name (find-package 'eco-template))))
