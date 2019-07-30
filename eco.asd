@@ -4,6 +4,7 @@
   :license "MIT"
   :homepage "https://github.com/eudoxia0/eco"
   :depends-on (:esrap
+               :alexandria
                :split-sequence
                :cl-who)
   :components ((:module "src"
