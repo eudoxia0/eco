@@ -76,6 +76,16 @@
                              (coerce body 'list))
              collecting (emit elem))))))
 
+(defmethod emit ((call <call>))
+  `(princ (,@(read-template-expressions (code call))
+           ,@(let ((children (loop
+                                for elem across (body call)
+                                collecting (emit elem))))
+               (and children
+                    `((with-output-to-string (%eco-stream)
+                        ,@children)))))
+          %eco-stream))
+
 (defun template-element-p (element)
   (typep element '<block>))
 
