@@ -1,4 +1,4 @@
-<% deftemplate (index title &optional posts) () %>
+<% deftemplate index (title &optional posts) () %>
   <!DOCTYPE html>
   <html>
     <head>
@@ -8,7 +8,7 @@
       <% if posts %>
         <h1>Recent Posts</h1>
         <ul id="post-list">
-          <% loop for (title . snippet) in posts %>
+          <% loop for (title . snippet) in posts do %>
             <li><%= title %> - <%= snippet %></li>
           <% end %>
         </ul>

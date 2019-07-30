@@ -36,7 +36,7 @@ A basic template (`.eco` extension) looks like this:
       <% if posts %>
         <h1>Recent Posts</h1>
         <ul id="post-list">
-          <% loop for (title . snippet) in posts %>
+          <% loop for (title . snippet) in posts do %>
             <li><%= title %> - <%= snippet %></li>
           <% end %>
         </ul>
@@ -60,8 +60,18 @@ To execute the template:
 (eco-template:index "My Blog" nil)
 ```
 
-**Note:** Eco is designed to be output-agnostic, so by default it will **not**
-autoescape HTML. Use the `e` function for that. You have been warned.
+Eco is designed to be output-agnostic, however, by default it will
+autoescape HTML for convenience. Specify :ESCAPE-HTML NIL when
+defining each template to disable this behaviour individually for each
+template.
+
+```erb
+<% deftemplate output-js-logger (module) (:escape-html nil) %>
+   function logDebug (message) {
+       console.log("<%= module %>: " + message);
+   }
+<% end %>
+```
 
 # Tags
 
