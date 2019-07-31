@@ -68,15 +68,13 @@
 
 (defmethod emit ((block <block>))
   (let ((body (body block)))
-    (if (typep body 'string)
-        body
-        (let ((else-tag-pos (position-if 'else-tag-p body)))
-          `(,@(read-template-expressions (code block))
-            ,@(loop
-                 for elem in (if else-tag-pos
-                                 (split-sequence-if 'else-tag-p body)
-                                 (coerce body 'list))
-                 collecting (emit elem)))))))
+    (let ((else-tag-pos (position-if 'else-tag-p body)))
+      `(,@(read-template-expressions (code block))
+        ,@(loop
+             for elem in (if else-tag-pos
+                             (split-sequence-if 'else-tag-p body)
+                             (coerce body 'list))
+             collecting (emit elem))))))
 
 (defun template-element-p (element)
   (typep element '<block>))
