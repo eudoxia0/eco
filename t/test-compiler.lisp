@@ -18,21 +18,21 @@
      "<% block %>missing end tag"))
 
   (progn
-    (is (equal (eco-template::compiler-1 "input")
+    (is (equal (eco-template:compiler-1 "input")
                "
 inputabc
 "))
-    (is (equal (eco-template::compiler-2 "[input1]" "[input2]")
+    (is (equal (eco-template:compiler-2 "[input1]" "[input2]")
                "
 [input1][input2]body
 "))
-    (is (equal (eco-template::compiler-3)
+    (is (equal (eco-template:compiler-3)
                "
 
 word1word2body
 
 "))
-    (is (equal (eco-template::compiler-4)
+    (is (equal (eco-template:compiler-4)
                "
 b
 "))))
