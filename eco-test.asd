@@ -9,4 +9,6 @@
                 :components
                 ((:file "eco")
                  (:eco-template "test")
-                 (:file "test-asdf")))))
+                 (:file "test-asdf")
+                 (:eco-template "compiler")
+                 (:file "test-compiler")))))

@@ -28,7 +28,9 @@
                       (component-pathname component)))
              (compiled (eco.compiler:compile-template
                         parsed
-                        (template-package component))))
+                        (template-package component)))
+             ;; Need to maintain reference EQuality for uninterned symbols.
+             (*print-circle* t))
         (print compiled stream)))))
 
 (defmethod perform ((op load-op) (component eco-template))

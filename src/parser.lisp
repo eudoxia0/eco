@@ -4,6 +4,7 @@
   (:import-from :split-sequence
                 :split-sequence-if)
   (:export :<block>
+           :<call>
            :<expr-tag>
            :<else-tag>
            :code
@@ -28,11 +29,14 @@
 
 (defclass <tag> () ())
 
-(defclass <expr-tag> ()
+(defclass <expr-tag> (<tag>)
   ((code :reader code :initarg :code)))
 
 (defclass <block-tag> (<tag>)
   ((code :reader code :initarg :code)))
+
+(defclass <call-tag> (<block-tag>)
+  ())
 
 (defclass <end-tag> (<tag>)
   ())
@@ -43,6 +47,9 @@
   ((code :reader code :initarg :code)
    (body :reader body :initarg :body)))
 
+(defclass <call> (<block>)
+  ())
+
 ;;; Parsing rules
 
 (defrule block-string (+ (not "%>"))
@@ -51,18 +58,21 @@
 (defrule tag (and "<%" block-string "%>")
   (:destructure (open code close)
     (declare (ignore open close))
-    (if (char= (elt code 0) #\=)
-        (make-instance '<expr-tag>
-                       :code (subseq (trim-whitespace code) 1))
-        (let ((text (trim-whitespace code)))
-          (cond
-            ((equal text "end")
-             (make-instance '<end-tag>))
-            ((equal text "else")
-             (make-instance '<else-tag>))
-            (t
-             (make-instance '<block-tag>
-                            :code text)))))))
+    (cond ((char= (elt code 0) #\=)
+           (make-instance '<expr-tag>
+                          :code (subseq (trim-whitespace code) 1)))
+          ((char= (elt code 0) #\-)
+           (make-instance '<call-tag>
+                          :code (subseq (trim-whitespace code) 1)))
+          (t (let ((text (trim-whitespace code)))
+               (cond
+                 ((equal text "end")
+                  (make-instance '<end-tag>))
+                 ((equal text "else")
+                  (make-instance '<else-tag>))
+                 (t
+                  (make-instance '<block-tag>
+                                 :code text))))))))
 
 (defrule raw-text (+ (not "<%"))
   (:lambda (list) (text list)))
@@ -83,9 +93,13 @@
                  (loop while (and tok (not (typep tok '<end-tag>))) do
                    (vector-push-extend
                     (cond
-                      ((typep tok '<block-tag>)
+                      ((or (typep tok '<block-tag>)
+                           ;; (subtypep '<call-tag> '<block-tag>) => T anyway.
+                           (typep tok '<call-tag>))
                        ;; Start a block
-                       (make-instance '<block>
+                       (make-instance (if (typep tok '<call-tag>)
+                                          '<call>
+                                          '<block>)
                                       :code (code tok)
                                       :body (rec-parse)))
                       (t

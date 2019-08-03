@@ -1,0 +1,15 @@
+<% deftemplate compiler-1 (hello) () %>
+<%= hello %>abc
+<% end %>
+
+<% deftemplate compiler-2 (x y) () %>
+<%- concatenate 'string x y %>body<% end %>
+<% end %>
+
+<% deftemplate compiler-3 () () %>
+<%- compiler-2 "word1" %>word2<% end %>
+<% end %>
+
+<% deftemplate compiler-4 () () %>
+<% compiler-2 "a" %>b<% end %>
+<% end %>
