@@ -95,6 +95,18 @@ Expressions and calls are more functional as they return values to be
 interpolated into their templates. The function called by the CALL
 construct may be another templates, or any arbitrary Lisp function.
 
+The `if` tag is a special case: it supports using an `else` tag to separate the true and
+false branches. For example:
+
+```lisp
+<% if posts %>
+  <h1>Recent Posts</h1>
+  ... loop over posts ...
+<% else %>
+  No recent posts.
+<% end %>
+```
+
 # Options
 
 - `*template-package*`: The package the templates will be defined it. Defaults
