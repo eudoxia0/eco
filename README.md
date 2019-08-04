@@ -54,7 +54,15 @@ To load this template, put this in your system definition file:
 (:eco-template "filename")
 ```
 
-To execute the template:
+For interactive or quick tests on the REPL, templates can be loaded
+using ECO:COMPILE-STRING,
+
+```lisp
+(eco:compile-string "<% deftemplate inline-test () () %>This is a test.<% end %>")
+```
+
+All templates are eventually compiled into Lisp functions. To get
+their outputs, call the templates like any Lisp function:
 
 ```lisp
 (eco-template:index "My Blog" nil)
@@ -75,8 +83,17 @@ template.
 
 # Tags
 
-- `<%= <expr> %>` becomes `<expr>`.
-- `<% <code> %><body><% end %>` becomes `(<code> <body>)`.
+There are three types of tags in Eco:
+
+- Expressions: `<%= <expr> %>` becomes `<expr>`.
+- Blocks: `<% <code> <arg1> <arg2> %><body><% end %>` becomes `(<code> <arg1> <arg2> <body>)`.
+- Calls: `<%- <fun> <arg1> <arg2> %><body><% end %>` becomes `(<fun> <arg1> <arg2> <body>)`.
+
+Blocks are used to specify Lisp code "inline" in the template, and
+tend to contain imperative code, their return values are ignored.
+Expressions and calls are more functional as they return values to be
+interpolated into their templates. The function called by the CALL
+construct may be another templates, or any arbitrary Lisp function.
 
 # Options
 
@@ -95,7 +112,8 @@ template.
 <% end %>
 ```
 
-Defines a template.
+Defines a template. The only option that is currently defined is
+:ESCAPE-HTML (default T)
 
 # Examples
 
